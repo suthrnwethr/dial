@@ -65,19 +65,6 @@ body{height:100%;overflow:hidden;width:100%;background:var(--color-bg-base);font
 ::-webkit-scrollbar{display:none}
 .hidden{display:none!important}
 
-/* Film grain — fixed, non-interactive SVG noise overlay. Tune --grain-opacity. */
-:root{--grain-opacity:.045}
-body::after{
-  content:"";
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  pointer-events:none;
-  opacity:var(--grain-opacity);
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size:200px 200px;
-}
-
 /* ============================================================================
    Type styles
    ============================================================================ */
@@ -233,6 +220,10 @@ body::after{
    Create screen
    ============================================================================ */
 #create-hdr,#rc-hdr{display:flex;flex-direction:column;align-items:center;gap:var(--space-24);flex-shrink:0;padding-top:max(16px,env(safe-area-inset-top));padding-bottom:0}
+/* Top fade — appears below the close button only once content is scrolled */
+#rc-hdr{position:relative;z-index:1}
+#rc-hdr::after{content:"";position:absolute;left:-16px;right:-16px;top:100%;height:44px;pointer-events:none;background:linear-gradient(to bottom,var(--color-bg-base) 10%,rgba(12,10,8,0));opacity:0;transition:opacity .25s ease}
+#rc-hdr.scrolled::after{opacity:1}
 
 /* Screen shared label (used in Create + RC) */
 .screen-label{color:var(--color-text-label);text-align:center;flex-shrink:0}
@@ -273,8 +264,8 @@ body::after{
    Generated / RC screen
    ============================================================================ */
 #rc-screen .screen-label{padding:0}
-.rc-coffee-name{color:var(--color-text-primary);text-align:center;padding:0 var(--space-16) var(--space-8);flex-shrink:0;font-size:12px;letter-spacing:.12px}
-.rationale-wrap{position:relative;margin:0 var(--space-16) 0;flex-shrink:0;overflow:hidden}
+.rc-coffee-name{color:var(--color-text-primary);text-align:center;padding:0 0 var(--space-8);flex-shrink:0;font-size:12px;letter-spacing:.12px}
+.rationale-wrap{position:relative;margin:0;flex-shrink:0;overflow:hidden}
 .rationale-text{color:var(--color-text-muted);text-align:center;line-height:1.5}
 .rationale-wrap.collapsed{max-height:138px}
 .rationale-fade{position:absolute;left:0;right:0;bottom:0;height:78px;pointer-events:none;background:linear-gradient(to bottom,rgba(12,10,8,0) 0%,var(--color-bg-base) 92%)}
@@ -282,20 +273,22 @@ body::after{
 .more-notes{display:block;margin:var(--space-12) auto 0;background:none;border:none;color:var(--color-text-secondary);font-family:var(--font-sans);font-size:14px;letter-spacing:.14px;cursor:pointer;text-align:center}
 
 /* Param grid (generated view — 2-column stacked cells with top dividers) */
-.rc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;column-gap:0;row-gap:var(--space-24);margin:var(--space-24) var(--space-16) 0}
+.rc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;column-gap:0;row-gap:var(--space-24);margin:var(--space-24) 0 0}
 .rc-cell{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-12) var(--space-8);border-top:1px solid var(--neutral-200);min-width:0}
 .rc-cell-lbl{font-family:var(--font-sans);font-size:12px;letter-spacing:.12px;color:var(--color-text-muted)}
 .rc-cell-val{font-family:var(--font-mono);font-size:16px;color:var(--color-text-primary);width:100%;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* Brew recipe card */
-.brew-recipe-card{margin:var(--space-24) var(--space-16) 0;background:var(--color-bg-surface-1);border:1px solid var(--color-border-subtle);border-radius:var(--radius-md);overflow:hidden;flex-shrink:0}
+.brew-recipe-card{margin:var(--space-24) 0 0;background:var(--color-bg-surface-1);border:1px solid var(--color-border-subtle);border-radius:var(--radius-md);overflow:hidden;flex-shrink:0}
 .brc-hdr{display:flex;align-items:center;justify-content:space-between;gap:var(--space-8);padding:var(--space-12) var(--space-20);cursor:pointer}
 .brc-title{color:var(--color-text-primary);font-family:var(--font-sans);font-size:16px}
 .brc-sub{color:var(--color-text-muted);font-family:var(--font-mono);font-size:14px;margin-top:var(--space-8)}
 .brc-chev{transition:transform .25s}
 .brc-card.open .brc-chev{transform:rotate(180deg)}
 .brc-body{padding:0 var(--space-20) var(--space-16);border-top:1px solid var(--color-border-subtle)}
-.rc-actions{display:flex;gap:var(--space-12);justify-content:center;padding:var(--space-16) var(--space-24) max(24px,env(safe-area-inset-bottom));flex-shrink:0}
+.rc-actions{display:flex;gap:var(--space-12);justify-content:center;padding:var(--space-16) var(--space-24) max(24px,env(safe-area-inset-bottom));flex-shrink:0;position:relative}
+/* Fade the scrolling content out just above the fixed action bar */
+.rc-actions::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:44px;pointer-events:none;background:linear-gradient(to top,var(--color-bg-base) 10%,rgba(12,10,8,0))}
 
 /* ============================================================================
    Stage overlay

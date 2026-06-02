@@ -418,6 +418,8 @@ async function doGenerate(){
 let viewingId = null;
 function showRC(r){
   viewingId=r.id;
+  const _rcs=document.getElementById('rc-scroll'); if(_rcs) _rcs.scrollTop=0;
+  document.getElementById('rc-hdr').classList.remove('scrolled');
   document.getElementById('rc-coffee-name').textContent=r.coffee||r.name;
   document.getElementById('rc-rationale').textContent=r.rationale||'';
   // reset rationale collapsed
@@ -777,6 +779,7 @@ function skipApiKey(){ document.getElementById('apikey-screen').classList.add('h
 /* ─── Init ──────────────────────────────────────────────────────────────────── */
 load();
 hydrateIcons(document);
+(function(){ const s=document.getElementById('rc-scroll'); if(s) s.addEventListener('scroll',()=>document.getElementById('rc-hdr').classList.toggle('scrolled', s.scrollTop>4)); })();
 setCoffeeDisplay();
 updateIcon();
 drawRings();
