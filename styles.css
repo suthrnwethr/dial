@@ -1,0 +1,332 @@
+/* ============================================================================
+   DIAL — Design Tokens
+   ============================================================================ */
+:root {
+  /* ---- Primitives: neutral ---- */
+  --neutral-0:#0c0a08;  --neutral-50:#12100d;  --neutral-100:#13110e;
+  --neutral-150:#181410; --neutral-175:#1a160e; --neutral-200:#1c1914;
+  --neutral-250:#201c17; --neutral-300:#2a2520; --neutral-325:#2c2922;
+  --neutral-350:#2e2820; --neutral-450:#3d3730; --neutral-500:#4a4232;
+  --neutral-525:#4a4238; --neutral-600:#675d4f; --neutral-650:#716c61;
+  --neutral-700:#8d7d6a; --neutral-725:#8d8268; --neutral-800:#9a8e82;
+  --neutral-950:#e8ddd0;
+  /* ---- Primitives: amber + status ---- */
+  --amber-100:#fbe8cb; --amber-500:#b66304; --error-500:#c07070;
+
+  /* ---- Semantic: background ---- */
+  --color-bg-base:var(--neutral-0);
+  --color-bg-surface-1:var(--neutral-150);
+  --color-bg-surface-2:var(--neutral-250);
+  --color-bg-surface-3:var(--neutral-300);
+  --color-bg-elevated:var(--neutral-200);
+  --color-bg-card:var(--neutral-175);
+  --color-bg-control:var(--neutral-250);
+  /* ---- Semantic: border ---- */
+  --color-border-default:var(--neutral-350);
+  --color-border-subtle:var(--neutral-325);
+  --color-border-amber:var(--neutral-500);
+  /* ---- Semantic: text ---- */
+  --color-text-primary:var(--neutral-950);
+  --color-text-secondary:var(--neutral-800);
+  --color-text-muted:var(--neutral-600);
+  --color-text-dim:var(--neutral-725);
+  --color-text-label:var(--neutral-325);
+  --color-text-icon:var(--neutral-700);
+  /* ---- Semantic: accent / status / icon ---- */
+  --color-accent-amber:var(--amber-500);
+  --color-accent-amber-bright:var(--amber-100);
+  --color-status-error:var(--error-500);
+  --color-icon-default:var(--neutral-700);
+  --color-icon-muted:var(--neutral-600);
+  --color-icon-dim:var(--neutral-450);
+  --color-icon-primary:var(--neutral-950);
+  --color-icon-accent:var(--amber-500);
+  --color-icon-on-accent:var(--amber-100);
+
+  /* ---- Type families ---- */
+  --font-sans:"Instrument Sans",system-ui,sans-serif;
+  --font-serif:"Instrument Serif",Georgia,serif;
+  --font-mono:"Source Code Pro",ui-monospace,monospace;
+
+  /* ---- Spacing ---- */
+  --space-4:4px; --space-8:8px; --space-12:12px; --space-16:16px;
+  --space-20:20px; --space-24:24px; --space-32:32px; --space-48:48px; --space-60:60px;
+  /* ---- Radius ---- */
+  --radius-sm:4px; --radius-md:8px; --radius-lg:24px; --radius-full:200px;
+}
+
+/* ============================================================================
+   Reset + base
+   ============================================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+span[data-icon]>svg{width:100%;height:100%;display:block}
+html{height:100%;overflow:hidden;background:var(--color-bg-base);-webkit-tap-highlight-color:transparent}
+body{height:100%;overflow:hidden;width:100%;background:var(--color-bg-base);font-family:var(--font-sans);color:var(--color-text-primary);-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+::-webkit-scrollbar{display:none}
+.hidden{display:none!important}
+
+/* Film grain — fixed, non-interactive SVG noise overlay. Tune --grain-opacity. */
+:root{--grain-opacity:.045}
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  pointer-events:none;
+  opacity:var(--grain-opacity);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px 200px;
+}
+
+/* ============================================================================
+   Type styles
+   ============================================================================ */
+.t-display-timer{font-family:var(--font-serif);font-size:64px;letter-spacing:0;line-height:1}
+.t-weight-l{font-family:var(--font-sans);font-size:64px;font-weight:400;letter-spacing:-1.28px;line-height:1}
+.t-weight-s{font-family:var(--font-sans);font-size:32px;font-weight:400;letter-spacing:-.64px;line-height:1}
+.t-heading-accent{font-family:var(--font-serif);font-size:22px;letter-spacing:.22px;line-height:1.5}
+.t-body{font-family:var(--font-sans);font-size:16px;letter-spacing:.16px}
+.t-caption{font-family:var(--font-sans);font-size:12px;letter-spacing:.12px}
+.t-label-status{font-family:var(--font-sans);font-size:14px;font-weight:600;letter-spacing:1.68px;text-transform:uppercase}
+.t-label{font-family:var(--font-sans);font-size:14px;letter-spacing:.14px}
+.t-button{font-family:var(--font-sans);font-size:14px;font-weight:500;letter-spacing:.14px}
+.t-mono-value{font-family:var(--font-mono);font-size:16px}
+.t-mono-sub{font-family:var(--font-mono);font-size:14px}
+
+/* ============================================================================
+   Home / Brew screen
+   ============================================================================ */
+#brew{position:relative;margin:0 auto;width:100%;height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:space-between;max-width:430px;overflow:hidden;padding:4px;padding-bottom:max(24px,calc(env(safe-area-inset-bottom) + 16px))}
+#brew-header{width:100%;display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top)) var(--space-16) 0;flex-shrink:0}
+#menu-btn{width:48px;height:48px;background:var(--color-bg-surface-1);border:1px solid transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-full);transition:background .2s,border-color .2s;padding:0}
+#menu-btn.lit{border-color:var(--color-border-amber)}
+#menu-btn svg{width:24px;height:24px;display:block}
+/* Fixed square. Size = smaller of full width OR the leftover vertical space after
+   reserving a fixed budget for the header + timer + buttons. This keeps the rings
+   stable (svh only settles once, doesn't jump as you scroll) AND guarantees the
+   Start/Reset buttons always have room — even on small phones. */
+#rings-wrap{flex:0 0 auto;width:min(100%,calc(100svh - 340px));aspect-ratio:1/1;margin:0 auto;position:relative;container-type:inline-size;display:flex;align-items:center;justify-content:center}
+#rings-svg{width:100%;height:100%;display:block}
+/* Weight readout — HTML overlay so the numbers can animate (SVG text is redrawn each frame) */
+#weight-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5cqw;pointer-events:none;transform:translateY(1cqw)}
+#lw-num{font-family:var(--font-sans);font-weight:400;font-size:12.3cqw;letter-spacing:0;line-height:1;will-change:transform,opacity}
+#gw-num{font-family:var(--font-sans);font-weight:400;font-size:8.2cqw;letter-spacing:-.02em;line-height:1;color:var(--neutral-325);will-change:transform,opacity}
+#brew-controls{flex-shrink:0;width:100%;display:flex;flex-direction:column;align-items:center;gap:var(--space-32)}
+#timer-area{flex-shrink:0;text-align:center;width:100%;display:flex;flex-direction:column;align-items:center;gap:var(--space-4)}
+#timer-el{color:var(--color-text-muted);transition:color .4s}
+#status-el{color:var(--color-text-dim);opacity:1;width:100%;padding:0 var(--space-24);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;will-change:transform,opacity}
+#brew-btns{flex-shrink:0;display:flex;gap:var(--space-24)}
+.brew-btn{width:120px;height:120px;border-radius:50%;border:.5px solid transparent;background:var(--neutral-100);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--neutral-525);transition:background .25s,color .25s,border-color .25s}
+.brew-btn.primary{background:var(--color-bg-elevated);border-color:var(--color-border-amber);color:var(--color-accent-amber-bright)}
+.brew-btn.lit{color:var(--color-text-secondary)}
+
+/* Dim brew screen when any overlay is open */
+#brew{transition:opacity .32s ease,filter .32s ease}
+#brew.dimmed{opacity:.4;filter:blur(2px);pointer-events:none}
+
+/* ============================================================================
+   Full-screen overlays (Menu, Create, RC)
+   ============================================================================ */
+.screen{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  max-width:430px;margin:0 auto;
+  background:var(--color-bg-base);
+  display:flex;flex-direction:column;
+  z-index:20;
+  opacity:0;visibility:hidden;
+  transition:opacity .32s ease,visibility 0s linear .32s;
+  padding:4px var(--space-16);
+  overflow:hidden;
+}
+.screen.open{opacity:1;visibility:visible;transition:opacity .32s ease}
+/* Stagger children entrance */
+.screen>*{transform:translateY(8px);opacity:0;transition:transform .38s cubic-bezier(.22,.7,0,1),opacity .38s ease}
+.screen.open>*{transform:none;opacity:1}
+
+/* ============================================================================
+   Menu screen
+   ============================================================================ */
+#menu-controls{width:100%;flex-shrink:0;display:flex;flex-direction:column;gap:var(--space-32);padding:max(16px,env(safe-area-inset-top)) 0 0;transition-delay:.04s}
+#menu-top{display:flex;align-items:center;justify-content:center}
+#menu-bottom{display:flex;align-items:center;justify-content:center}
+#menu-close-btn{width:48px;height:48px;background:var(--color-bg-elevated);border:1px solid var(--color-border-amber);cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-full);padding:0}
+#menu-close-btn svg{width:24px;height:24px;display:block}
+#recipes-tab{transition-delay:.08s}
+#setup-tab{transition-delay:.08s}
+
+/* Segment control */
+.seg-ctrl{display:inline-flex;background:var(--neutral-50);border-radius:var(--radius-full);padding:var(--space-8) var(--space-12) var(--space-8) var(--space-8);gap:var(--space-4)}
+.seg-btn{height:40px;padding:0 var(--space-16);border-radius:var(--radius-md);border:none;background:none;font-family:var(--font-sans);font-size:14px;color:var(--color-text-label);cursor:pointer;transition:all .2s;white-space:nowrap}
+.seg-btn.active{background:var(--color-bg-elevated);color:var(--color-accent-amber-bright);border-radius:var(--radius-full)}
+
+/* Empty state */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--space-24);padding:48px var(--space-24)}
+.empty-state p{color:var(--color-text-label)}
+
+/* Recipe list */
+.select-lbl{color:var(--color-text-label);text-align:center;padding:var(--space-8) 0 0}
+.recipe-list{display:flex;flex-direction:column;gap:var(--space-12)}
+.recipe-card{display:flex;align-items:center;justify-content:space-between;padding:var(--space-16) var(--space-20);border-radius:var(--radius-md);background:var(--color-bg-card);border:1px solid transparent;cursor:pointer;transition:all .2s;width:100%}
+.recipe-card.selected{background:var(--color-bg-surface-3);border-color:var(--color-border-amber)}
+.rc-name{color:var(--color-text-primary);margin-bottom:var(--space-8)}
+.rc-sub{color:var(--color-text-muted)}
+.rc-kebab{background:none;border:none;color:var(--color-icon-muted);cursor:pointer;padding:4px 8px;line-height:1;flex-shrink:0}
+
+/* Menu actions row */
+.menu-actions{display:flex;gap:var(--space-12);justify-content:center;padding:var(--space-8) 0 max(24px,env(safe-area-inset-bottom))}
+
+/* ============================================================================
+   Common icon button
+   ============================================================================ */
+.icon-btn{width:48px;height:48px;border-radius:50%;background:var(--color-bg-elevated);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--color-icon-primary);transition:background .2s;flex-shrink:0}
+.icon-btn svg{width:20px;height:20px;display:block}
+
+/* ============================================================================
+   Setup tab + form controls
+   ============================================================================ */
+.setup-section-lbl{font-family:var(--font-sans);font-size:10px;font-weight:500;letter-spacing:1.2px;color:var(--color-text-muted);text-transform:uppercase;margin-bottom:var(--space-8);margin-top:var(--space-16)}
+.method-wrap{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:var(--space-4)}
+.method-btn{padding:7px 14px;border-radius:var(--radius-full);border:1px solid var(--color-border-default);background:none;cursor:pointer;font-family:var(--font-sans);font-size:12px;color:var(--color-text-muted);transition:all .2s}
+.method-btn.active{background:var(--color-bg-surface-3);color:var(--color-text-primary);border-color:var(--color-bg-surface-3)}
+.setup-inp{width:100%;background:var(--color-bg-surface-2);border:1px solid var(--color-border-default);border-radius:10px;padding:11px 14px;font-family:var(--font-sans);font-size:16px;color:var(--color-text-primary);outline:none;margin-bottom:10px}
+.btn-pill{width:100%;padding:13px;border-radius:999px;border:none;font-family:var(--font-sans);font-size:14px;font-weight:500;color:var(--color-text-primary);cursor:pointer}
+.btn-pill.dark{background:var(--color-bg-surface-3)}
+.btn-pill.ghost{background:none;border:1px solid var(--color-border-default);color:var(--color-text-muted)}
+
+/* Toggle switch */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:var(--space-12);padding:var(--space-8) 0}
+.toggle-lbl{font-family:var(--font-sans);font-size:14px;color:var(--color-text-secondary)}
+.toggle{width:46px;height:28px;border-radius:999px;border:none;background:var(--color-bg-surface-3);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;padding:0}
+.toggle[aria-checked="true"]{background:var(--color-accent-amber-bright)}
+.toggle-knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--color-text-muted);transition:transform .2s,background .2s}
+.toggle[aria-checked="true"] .toggle-knob{transform:translateX(18px);background:var(--neutral-0)}
+
+/* ============================================================================
+   Popover
+   ============================================================================ */
+.popover{position:fixed;background:var(--color-bg-surface-2);border:1px solid var(--color-border-default);border-radius:10px;padding:4px;z-index:50;min-width:130px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.pop-item{display:block;width:100%;padding:10px 14px;border-radius:6px;border:none;background:none;font-family:var(--font-sans);font-size:14px;color:var(--color-text-primary);text-align:left;cursor:pointer}
+.pop-item.danger{color:var(--color-status-error)}
+.pop-item.active{color:var(--color-accent-amber-bright);background:var(--color-bg-surface-3)}
+/* Coffee weight dropdown — scrollable, mono values */
+.scroll-pop{max-height:240px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.scroll-pop .pop-item{font-family:var(--font-mono);text-align:center}
+
+/* Clickable param value (Coffee dropdown trigger) */
+.param-box-val.clickable{cursor:pointer}
+.param-box.dropdown-open .param-box-val.clickable{outline:1px solid var(--color-border-amber)}
+
+/* ============================================================================
+   Delete confirm modal
+   ============================================================================ */
+#confirm-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:var(--space-24);background:rgba(0,0,0,.7);opacity:0;transition:opacity .2s ease}
+#confirm-modal.open{opacity:1}
+.confirm-card{width:100%;max-width:320px;background:var(--color-bg-surface-1);border:1px solid var(--color-border-default);border-radius:var(--radius-lg);padding:var(--space-24);text-align:center;transform:scale(.94);transition:transform .2s cubic-bezier(.32,.72,0,1)}
+#confirm-modal.open .confirm-card{transform:scale(1)}
+.confirm-title{font-family:var(--font-serif);font-size:22px;color:var(--color-text-primary);margin-bottom:var(--space-8)}
+.confirm-msg{font-family:var(--font-sans);font-size:13px;color:var(--color-text-muted);margin-bottom:var(--space-24)}
+.confirm-btns{display:flex;gap:var(--space-12)}
+.confirm-btn{flex:1;padding:13px;border-radius:999px;border:1px solid var(--color-border-default);background:none;font-family:var(--font-sans);font-size:14px;font-weight:500;color:var(--color-text-secondary);cursor:pointer}
+.confirm-btn.danger{background:var(--color-status-error);border-color:var(--color-status-error);color:var(--neutral-0)}
+
+/* ============================================================================
+   Create screen
+   ============================================================================ */
+#create-hdr,#rc-hdr{display:flex;flex-direction:column;align-items:center;gap:var(--space-24);flex-shrink:0;padding-top:max(16px,env(safe-area-inset-top));padding-bottom:0}
+
+/* Screen shared label (used in Create + RC) */
+.screen-label{color:var(--color-text-label);text-align:center;flex-shrink:0}
+
+/* Setup card */
+.setup-card{background:var(--color-bg-surface-1);border:1px solid var(--color-border-subtle);border-radius:var(--radius-md);overflow:hidden;flex-shrink:0}
+.setup-card-hdr{display:flex;align-items:center;justify-content:space-between;gap:var(--space-8);padding:var(--space-12) var(--space-20);cursor:pointer}
+.setup-card-hdr>div{flex:1;min-width:0;overflow:hidden}
+.sc-title{color:var(--color-text-primary)}
+.sc-sub{color:var(--color-text-muted);margin-top:var(--space-8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.sc-body{padding:0 var(--space-20) var(--space-16);border-top:1px solid var(--color-border-subtle)}
+
+/* Param grid (create flow — box style) */
+.param-grid{display:flex;flex-direction:column;gap:var(--space-8)}
+.param-grid-row{display:flex;gap:var(--space-8)}
+.param-box{display:flex;flex-direction:column;gap:var(--space-8);flex:1;min-width:0}
+.param-box.full-width{flex:none;width:100%}
+.param-box-lbl{color:var(--color-text-primary)}
+.param-box-val{background:var(--color-bg-surface-2);border-radius:var(--radius-md);padding:14px var(--space-16);display:flex;align-items:center;justify-content:center;gap:var(--space-8);color:var(--color-text-dim)}
+.param-box-val select{background:none;border:none;outline:none;font-family:var(--font-mono);font-size:16px;color:var(--color-text-dim);text-align:center;cursor:pointer;appearance:none;-webkit-appearance:none;flex:1;min-width:0}
+
+/* Label upload CTA */
+.label-cta{display:flex;flex-direction:column;align-items:center;gap:var(--space-20);text-align:center}
+.label-cta p{color:var(--color-text-muted);line-height:1.6;max-width:240px}
+.upload-btns{display:flex;gap:var(--space-12);justify-content:center}
+.uploaded-card{background:var(--color-bg-surface-2);border:1px solid var(--color-border-default);border-radius:var(--radius-md);padding:14px var(--space-16);display:flex;align-items:center;justify-content:space-between;gap:var(--space-12)}
+.ul-info strong{font-family:var(--font-sans);font-size:16px;font-weight:400;color:var(--color-text-primary);display:block;margin-bottom:2px}
+.ul-info span{color:var(--color-text-muted)}
+.gen-wrap{display:flex;justify-content:center;padding:var(--space-16) 0 var(--space-8)}
+.err-txt{color:var(--color-status-error);font-size:12px;text-align:center;line-height:1.5}
+.loading-box{display:flex;flex-direction:column;align-items:center;gap:14px;padding:48px 24px}
+.dots{display:flex;gap:6px;align-items:center}
+.dots .dot{width:6px;height:6px;border-radius:50%;background:var(--color-accent-amber);animation:blink 1.2s ease-in-out infinite}
+.loading-lbl{font-size:11px;letter-spacing:1.4px;color:var(--color-text-muted);text-transform:uppercase}
+@keyframes blink{0%,100%{opacity:.2}50%{opacity:1}}
+
+/* ============================================================================
+   Generated / RC screen
+   ============================================================================ */
+#rc-screen .screen-label{padding:0}
+.rc-coffee-name{color:var(--color-text-primary);text-align:center;padding:0 var(--space-16) var(--space-8);flex-shrink:0;font-size:12px;letter-spacing:.12px}
+.rationale-wrap{position:relative;margin:0 var(--space-16) 0;flex-shrink:0;overflow:hidden}
+.rationale-text{color:var(--color-text-muted);text-align:center;line-height:1.5}
+.rationale-wrap.collapsed{max-height:138px}
+.rationale-fade{position:absolute;left:0;right:0;bottom:0;height:78px;pointer-events:none;background:linear-gradient(to bottom,rgba(12,10,8,0) 0%,var(--color-bg-base) 92%)}
+.rationale-wrap.expanded .rationale-fade{display:none}
+.more-notes{display:block;margin:var(--space-12) auto 0;background:none;border:none;color:var(--color-text-secondary);font-family:var(--font-sans);font-size:14px;letter-spacing:.14px;cursor:pointer;text-align:center}
+
+/* Param grid (generated view — 2-column stacked cells with top dividers) */
+.rc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;column-gap:0;row-gap:var(--space-24);margin:var(--space-24) var(--space-16) 0}
+.rc-cell{display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-12) var(--space-8);border-top:1px solid var(--neutral-200);min-width:0}
+.rc-cell-lbl{font-family:var(--font-sans);font-size:12px;letter-spacing:.12px;color:var(--color-text-muted)}
+.rc-cell-val{font-family:var(--font-mono);font-size:16px;color:var(--color-text-primary);width:100%;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Brew recipe card */
+.brew-recipe-card{margin:var(--space-24) var(--space-16) 0;background:var(--color-bg-surface-1);border:1px solid var(--color-border-subtle);border-radius:var(--radius-md);overflow:hidden;flex-shrink:0}
+.brc-hdr{display:flex;align-items:center;justify-content:space-between;gap:var(--space-8);padding:var(--space-12) var(--space-20);cursor:pointer}
+.brc-title{color:var(--color-text-primary);font-family:var(--font-sans);font-size:16px}
+.brc-sub{color:var(--color-text-muted);font-family:var(--font-mono);font-size:14px;margin-top:var(--space-8)}
+.brc-chev{transition:transform .25s}
+.brc-card.open .brc-chev{transform:rotate(180deg)}
+.brc-body{padding:0 var(--space-20) var(--space-16);border-top:1px solid var(--color-border-subtle)}
+.rc-actions{display:flex;gap:var(--space-12);justify-content:center;padding:var(--space-16) var(--space-24) max(24px,env(safe-area-inset-bottom));flex-shrink:0}
+
+/* ============================================================================
+   Stage overlay
+   ============================================================================ */
+#ov{position:fixed;top:0;left:50%;width:100%;height:100svh;background:var(--neutral-50);z-index:30;display:flex;flex-direction:column;align-items:center;transform:translate(-50%,105%);transition:transform .35s cubic-bezier(.32,.72,0,1);max-width:430px;overflow-y:auto}
+#ov.open{transform:translate(-50%,0)}
+.ov-inner{flex:1;width:100%;padding:max(32px,env(safe-area-inset-top)) var(--space-20) 0;display:flex;flex-direction:column;align-items:center;gap:var(--space-32)}
+.ov-title{color:var(--color-icon-on-accent)}
+.stage-list{width:100%;display:flex;flex-direction:column;align-items:center;gap:var(--space-8)}
+.stage-item{display:flex;flex-direction:column;align-items:center;gap:var(--space-8);text-align:center;width:100%}
+.si-name{color:var(--color-text-muted)}
+.si-stats{color:var(--color-icon-on-accent)}
+.si-tech{color:var(--color-text-muted);max-width:280px}
+.stage-connector{width:1px;height:18px;background:var(--color-icon-dim)}
+.ov-btn{padding:var(--space-24) var(--space-24) max(48px,calc(env(safe-area-inset-bottom) + 24px));flex-shrink:0}
+
+/* ============================================================================
+   API key screen
+   ============================================================================ */
+#apikey-screen{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;height:100svh;background:var(--color-bg-base);display:flex;flex-direction:column;max-width:430px;z-index:100}
+.ak-body{flex:1;display:flex;flex-direction:column;justify-content:center;padding:40px 28px}
+.ak-tag{font-size:10px;letter-spacing:2px;color:var(--color-accent-amber);margin-bottom:20px;text-transform:uppercase}
+.ak-title{font-family:var(--font-serif);font-size:28px;font-weight:400;margin-bottom:12px;line-height:1.2;color:var(--color-text-primary)}
+.ak-desc{font-size:13px;color:var(--color-text-muted);line-height:1.7;margin-bottom:24px}
+.ak-steps{background:var(--color-bg-surface-1);border:1px solid var(--color-border-default);border-radius:var(--radius-md);padding:16px;margin-bottom:24px}
+.ak-step{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
+.ak-step:last-child{margin-bottom:0}
+.ak-num{width:20px;height:20px;border-radius:50%;background:var(--color-bg-surface-2);border:1px solid var(--color-border-default);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--color-text-muted);flex-shrink:0;margin-top:1px}
+.ak-step-txt{font-size:12px;color:var(--color-text-muted);line-height:1.6}
+.ak-step-txt code{color:var(--color-text-primary);font-family:var(--font-mono)}
+.ak-input{width:100%;background:var(--color-bg-surface-1);border:1px solid var(--color-border-default);border-radius:10px;padding:13px 14px;color:var(--color-text-primary);font-size:16px;font-family:var(--font-mono);outline:none;margin-bottom:10px}
+.ak-err{color:var(--color-status-error);font-size:12px;margin-bottom:10px;line-height:1.5}
+.ak-note{font-size:10px;color:var(--color-text-label);text-align:center;line-height:1.6;margin-top:12px}
+.ak-footer{padding:0 28px max(40px,calc(env(safe-area-inset-bottom) + 20px))}

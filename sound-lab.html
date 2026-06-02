@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Dial — Sound Lab</title>
+<style>
+  :root{--bg:#0c0a08;--card:#13110e;--card2:#181410;--bd:#2e2820;--amber:#fbe8cb;--amberd:#8d8268;--txt:#e8ddd0;--mut:#8d8268;--dim:#675d4f}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:"Instrument Sans",system-ui,sans-serif;padding:20px;max-width:560px;margin:0 auto}
+  h1{font-weight:500;font-size:17px;letter-spacing:.3px;margin-bottom:2px}
+  p.sub{color:var(--mut);font-size:12px;margin-bottom:16px;line-height:1.5}
+  .slots{display:flex;gap:8px;margin-bottom:16px}
+  .slot{flex:1;background:var(--card2);border:1px solid var(--bd);border-radius:12px;padding:10px;text-align:center}
+  .slot.active{border-color:var(--amber)}
+  .slot b{display:block;font-size:13px;font-weight:500;margin-bottom:8px}
+  .slot .mini{display:flex;gap:4px;justify-content:center}
+  .slot button{font-size:10px;padding:5px 7px;border-radius:7px;border:1px solid var(--bd);background:var(--card);color:var(--mut);cursor:pointer;font-family:inherit}
+  .slot button:hover{border-color:var(--amber);color:var(--txt)}
+  .ctrl{display:grid;grid-template-columns:96px 1fr 52px;align-items:center;gap:10px;padding:6px 0}
+  .ctrl label{font-size:12px;color:var(--mut)}
+  .ctrl output{font-size:12px;color:var(--txt);font-family:"Source Code Pro",monospace;text-align:right}
+  input[type=range]{width:100%;accent-color:var(--amber);background:transparent}
+  select{background:var(--card2);border:1px solid var(--bd);color:var(--txt);border-radius:7px;padding:5px;font-family:inherit;font-size:12px;width:100%}
+  .play{width:100%;padding:18px;margin:16px 0 10px;border:none;border-radius:14px;background:var(--amber);color:#1a160e;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer}
+  .play:active{transform:scale(.99)}
+  .out{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px;font-family:"Source Code Pro",monospace;font-size:11px;color:var(--amberd);white-space:pre-wrap;word-break:break-all;line-height:1.5}
+  .row{display:flex;gap:8px;margin-top:8px}
+  .row button{flex:1;padding:10px;border:1px solid var(--bd);border-radius:9px;background:var(--card2);color:var(--mut);font-family:inherit;font-size:12px;cursor:pointer}
+  .row button:hover{border-color:var(--amber);color:var(--txt)}
+  .sec{font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:var(--dim);margin:14px 0 4px}
+</style>
+</head>
+<body>
+  <h1>Dial — Sound Lab</h1>
+  <p class="sub">Tune a cue, hit Play (or Space). For a clean simple tone, set Detune / Strike / Reverb / Partials to 0. Save to a slot, then Copy JSON and paste it back to me to bake in.</p>
+
+  <div class="slots">
+    <div class="slot active" id="slot-pour"><b>Pour start</b><div class="mini"><button onclick="loadSlot('pour')">Load</button><button onclick="saveSlot('pour')">Save</button><button onclick="playSlot('pour')">▶</button></div></div>
+    <div class="slot" id="slot-draw"><b>Drawdown</b><div class="mini"><button onclick="loadSlot('draw')">Load</button><button onclick="saveSlot('draw')">Save</button><button onclick="playSlot('draw')">▶</button></div></div>
+    <div class="slot" id="slot-done"><b>Finish</b><div class="mini"><button onclick="loadSlot('done')">Load</button><button onclick="saveSlot('done')">Save</button><button onclick="playSlot('done')">▶</button></div></div>
+  </div>
+
+  <div class="sec">Tone</div>
+  <div class="ctrl"><label>Waveform</label><select id="wave"><option value="sine">sine</option><option value="triangle">triangle</option></select><output></output></div>
+  <div id="sliders"></div>
+
+  <button class="play" onclick="playCurrent()">▶ Play  (Space)</button>
+
+  <div class="sec">Params (copy &amp; send to me)</div>
+  <div class="out" id="out"></div>
+  <div class="row">
+    <button onclick="copyOut()">Copy this cue</button>
+    <button onclick="copyAll()">Copy all 3 slots</button>
+  </div>
+
+<script>
+/* ---- parameter definitions ---- */
+const FIELDS=[
+  {id:'freq',    label:'Frequency', min:50,  max:800,  step:1,    def:264, unit:'Hz'},
+  {id:'attack',  label:'Attack',    min:0,   max:300,  step:5,    def:60,  unit:'ms'},
+  {id:'dur',     label:'Decay',     min:0.3, max:3.0,  step:0.05, def:1.1, unit:'s'},
+  {id:'gain',    label:'Volume',    min:0,   max:0.12, step:0.002,def:0.05,unit:''},
+  {id:'cutoff',  label:'Lowpass',   min:200, max:5000, step:50,   def:1400,unit:'Hz'},
+  {id:'glide',   label:'Glide ×',   min:0.8, max:1.2,  step:0.005,def:1.0, unit:''},
+  {id:'l2ratio', label:'Layer2 ×',  min:1,   max:4,    step:0.01, def:1.5, unit:''},
+  {id:'l2level', label:'Layer2 vol',min:0,   max:1,    step:0.02, def:0.4, unit:''},
+  {id:'detune',  label:'Detune',    min:0,   max:4,    step:0.1,  def:0,   unit:'Hz'},
+  {id:'partial', label:'Partials',  min:0,   max:1,    step:0.02, def:0,   unit:''},
+  {id:'strike',  label:'Strike',    min:0,   max:1,    step:0.02, def:0,   unit:''},
+  {id:'reverb',  label:'Reverb',    min:0,   max:0.8,  step:0.02, def:0,   unit:''},
+];
+const PRESETS={
+  pour:{wave:'sine',freq:288,attack:60,dur:1.1,gain:0.05,cutoff:1400,glide:1.0,l2ratio:1.5,l2level:0.56,detune:0,partial:0,strike:0,reverb:0},
+  draw:{wave:'sine',freq:176,attack:140,dur:1.9,gain:0.05,cutoff:820,glide:0.95,l2ratio:1.5,l2level:0.4,detune:0,partial:0,strike:0,reverb:0},
+  done:{wave:'sine',freq:264,attack:80,dur:1.4,gain:0.05,cutoff:1400,glide:1.0,l2ratio:1.5,l2level:0.5,detune:0,partial:0,strike:0,reverb:0},
+};
+
+/* ---- build UI ---- */
+const wrap=document.getElementById('sliders');
+FIELDS.forEach(f=>{
+  const d=document.createElement('div'); d.className='ctrl';
+  d.innerHTML=`<label>${f.label}</label><input type="range" id="${f.id}" min="${f.min}" max="${f.max}" step="${f.step}" value="${f.def}"><output id="${f.id}-o"></output>`;
+  wrap.appendChild(d);
+});
+function readParams(){
+  const p={wave:document.getElementById('wave').value};
+  FIELDS.forEach(f=>p[f.id]=parseFloat(document.getElementById(f.id).value));
+  return p;
+}
+function writeParams(p){
+  document.getElementById('wave').value=p.wave||'sine';
+  FIELDS.forEach(f=>{ if(p[f.id]!==undefined){ document.getElementById(f.id).value=p[f.id]; } });
+  refresh();
+}
+function refresh(){
+  FIELDS.forEach(f=>{ const v=document.getElementById(f.id).value; document.getElementById(f.id+'-o').textContent=v+(f.unit?(' '+f.unit):''); });
+  document.getElementById('out').textContent=JSON.stringify(readParams());
+}
+wrap.addEventListener('input',refresh);
+document.getElementById('wave').addEventListener('change',refresh);
+
+/* ---- slots (localStorage) ---- */
+let current='pour';
+function setActive(slot){ current=slot; document.querySelectorAll('.slot').forEach(s=>s.classList.remove('active')); document.getElementById('slot-'+slot).classList.add('active'); }
+function getStored(slot){ try{ return JSON.parse(localStorage.getItem('dial-lab-'+slot)); }catch(e){ return null; } }
+function loadSlot(slot){ setActive(slot); writeParams(getStored(slot)||PRESETS[slot]); }
+function saveSlot(slot){ localStorage.setItem('dial-lab-'+slot, JSON.stringify(readParams())); setActive(slot); flash('Saved to '+slot); }
+function playSlot(slot){ setActive(slot); writeParams(getStored(slot)||PRESETS[slot]); play(readParams()); }
+function playCurrent(){ play(readParams()); }
+function flash(msg){ const o=document.getElementById('out'); const prev=o.textContent; o.textContent=msg; setTimeout(()=>o.textContent=prev,800); }
+function copyOut(){ navigator.clipboard.writeText('"'+current+'": '+JSON.stringify(readParams())); flash('Copied '+current); }
+function copyAll(){
+  const all={}; ['pour','draw','done'].forEach(s=>all[s]=getStored(s)||PRESETS[s]);
+  navigator.clipboard.writeText(JSON.stringify(all,null,2)); flash('Copied all 3 slots');
+}
+
+/* ---- synth ---- */
+let audioCtx=null, reverb=null;
+function initAudio(){ try{ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){} }
+function initReverb(){
+  if(reverb||!audioCtx) return;
+  reverb=audioCtx.createConvolver();
+  const len=Math.floor(audioCtx.sampleRate*2.4), buf=audioCtx.createBuffer(2,len,audioCtx.sampleRate);
+  for(let ch=0;ch<2;ch++){ const d=buf.getChannelData(ch); for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3.2); }
+  reverb.buffer=buf;
+  const rg=audioCtx.createGain(); rg.gain.value=1; reverb.connect(rg); rg.connect(audioCtx.destination);
+}
+function play(p){
+  initAudio(); if(!audioCtx) return; initReverb();
+  const t=audioCtx.currentTime, att=p.attack/1000, MASTER=3.4;
+  const send=audioCtx.createGain(); send.gain.value=p.reverb; send.connect(reverb);
+  const layers=[{ratio:1,level:1},{ratio:p.l2ratio,level:p.l2level}];
+  if(p.partial>0){ layers.push({ratio:2.01,level:0.42*p.partial},{ratio:2.71,level:0.22*p.partial},{ratio:4.18,level:0.12*p.partial}); }
+  // strike transient
+  if(p.strike>0){
+    const n=audioCtx.createBuffer(1,Math.floor(audioCtx.sampleRate*0.06),audioCtx.sampleRate);
+    const nd=n.getChannelData(0); for(let i=0;i<nd.length;i++) nd[i]=Math.random()*2-1;
+    const ns=audioCtx.createBufferSource(); ns.buffer=n;
+    const nf=audioCtx.createBiquadFilter(); nf.type='bandpass'; nf.frequency.value=p.freq*3.2; nf.Q.value=0.7;
+    const ng=audioCtx.createGain();
+    ng.gain.setValueAtTime(0.0001,t); ng.gain.linearRampToValueAtTime(p.gain*p.strike*0.5*MASTER,t+0.004); ng.gain.exponentialRampToValueAtTime(0.0001,t+0.09);
+    ns.connect(nf); nf.connect(ng); ng.connect(audioCtx.destination); ng.connect(send);
+    ns.start(t); ns.stop(t+0.12);
+  }
+  layers.forEach((L,idx)=>{
+    const dts=p.detune>0?[-p.detune,p.detune]:[0];
+    dts.forEach(dt=>{
+      const o=audioCtx.createOscillator(), g=audioCtx.createGain(), lp=audioCtx.createBiquadFilter();
+      o.type=p.wave; o.frequency.setValueAtTime(p.freq*L.ratio+dt,t);
+      if(p.glide!==1) o.frequency.exponentialRampToValueAtTime(p.freq*L.ratio*p.glide+dt,t+p.dur);
+      lp.type='lowpass'; lp.frequency.value=p.cutoff;
+      const pd=p.dur*(idx<2?1:0.6), peak=p.gain*L.level*(p.detune>0?0.5:1)*MASTER;
+      g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(peak,t+att+idx*0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+pd);
+      o.connect(lp); lp.connect(g); g.connect(audioCtx.destination); g.connect(send);
+      o.start(t); o.stop(t+pd+0.06);
+    });
+  });
+}
+
+document.addEventListener('keydown',e=>{ if(e.code==='Space'){ e.preventDefault(); playCurrent(); } });
+loadSlot('pour');
+</script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0c0a08"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Dial"/>
+<title>Dial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css?v=37"/>
+</head>
+<body>
+
+<!-- HOME SCREEN -->
+<div id="brew">
+  <div id="brew-header">
+    <button id="menu-btn" onclick="openMenu()" aria-label="Menu"></button>
+  </div>
+  <div id="rings-wrap">
+    <svg id="rings-svg" viewBox="0 0 390 390" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div id="weight-overlay">
+      <div id="lw-num">00</div>
+      <div id="gw-num">00</div>
+    </div>
+  </div>
+  <div id="brew-controls">
+    <div id="timer-area">
+      <div id="timer-el" class="t-display-timer">0:00</div>
+      <div id="status-el" class="t-label-status">NO RECIPE SELECTED</div>
+    </div>
+    <div id="brew-btns">
+      <button class="brew-btn t-button" id="start-btn" onclick="toggleBrew()">Start</button>
+      <button class="brew-btn t-button" id="reset-btn" onclick="resetBrew()">Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- MENU SCREEN -->
+<div class="screen" id="menu-screen">
+  <div id="menu-controls">
+    <div id="menu-top">
+      <button id="menu-close-btn" onclick="closeMenu()" aria-label="Close menu"></button>
+    </div>
+    <div id="menu-bottom">
+      <div class="seg-ctrl">
+        <button class="seg-btn t-label active" onclick="switchTab('recipes')">Recipes</button>
+        <button class="seg-btn t-label" onclick="switchTab('setup')">My setup</button>
+      </div>
+    </div>
+  </div>
+  <!-- Recipes tab -->
+  <div id="recipes-tab" style="display:flex;flex-direction:column;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain">
+    <div id="recipes-empty" class="empty-state hidden">
+      <p class="t-body">No recipes yet</p>
+      <button class="icon-btn" onclick="openCreate()" data-icon="plus" aria-label="Add recipe"></button>
+    </div>
+    <div id="recipes-list-wrap" class="hidden" style="display:flex;flex-direction:column;gap:var(--space-24);flex:1">
+      <p class="select-lbl t-body">Select or Create</p>
+      <div id="recipes-list" class="recipe-list"></div>
+      <div id="menu-actions" class="menu-actions"></div>
+    </div>
+  </div>
+  <!-- Setup tab -->
+  <div id="setup-tab" class="hidden" style="overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;flex:1;padding:var(--space-4) 0 var(--space-24)">
+    <div class="setup-section-lbl" style="margin-top:8px">Brew Method</div>
+    <div id="sm-methods" class="method-wrap"></div>
+    <div class="setup-section-lbl">Grinder</div>
+    <input class="setup-inp" id="sm-grinder" type="text" placeholder="e.g. Baratza Encore" oninput="onSetupInput()"/>
+    <div class="setup-section-lbl">Kettle</div>
+    <input class="setup-inp" id="sm-kettle" type="text" placeholder="e.g. Fellow Stagg EKG" oninput="onSetupInput()"/>
+    <div class="setup-section-lbl">Sound</div>
+    <div class="toggle-row">
+      <span class="toggle-lbl">Pour &amp; finish sounds</span>
+      <button id="sound-toggle" class="toggle" role="switch" aria-checked="true" onclick="toggleSound()" aria-label="Toggle sounds"><span class="toggle-knob"></span></button>
+    </div>
+    <div id="sm-save-wrap" class="hidden" style="display:flex;justify-content:center;padding-top:var(--space-16)">
+      <button class="icon-btn" onclick="saveSetup()" data-icon="check" aria-label="Save setup"></button>
+    </div>
+    <div style="height:16px"></div>
+  </div>
+</div>
+
+<!-- CREATE SCREEN -->
+<div class="screen" id="create-screen">
+  <div id="create-hdr">
+    <button class="icon-btn" onclick="closeCreate()" data-icon="x" aria-label="Close"></button>
+    <p class="screen-label t-label">New recipe</p>
+  </div>
+  <div id="create-scroll" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;display:flex;flex-direction:column;gap:var(--space-24);padding-top:var(--space-16);padding-bottom:max(24px,env(safe-area-inset-bottom))">
+    <div class="setup-card" id="cr-setup-card">
+      <div class="setup-card-hdr" onclick="toggleSetupCard()">
+        <div>
+          <p class="sc-title t-body">Setup</p>
+          <p class="sc-sub t-mono-sub" id="cr-setup-sub"></p>
+        </div>
+        <span id="cr-chev" data-icon="chevron-down" style="width:20px;height:20px;display:block;flex-shrink:0"></span>
+      </div>
+      <div class="sc-body hidden" id="cr-setup-body">
+        <div style="height:10px"></div>
+        <div class="setup-section-lbl">Brew Method</div>
+        <div id="cr-methods" class="method-wrap"></div>
+        <div class="setup-section-lbl">Grinder</div>
+        <input class="setup-inp" id="cr-grinder" type="text" placeholder="e.g. Baratza Encore"/>
+        <div class="setup-section-lbl">Kettle</div>
+        <input class="setup-inp" id="cr-kettle" type="text" placeholder="e.g. Fellow Stagg EKG"/>
+        <div style="height:4px"></div>
+      </div>
+    </div>
+    <div class="param-grid" id="cr-params">
+      <div class="param-grid-row">
+        <div class="param-box" id="coffee-box" onclick="openCoffeePop(event)">
+          <p class="param-box-lbl t-caption">Coffee</p>
+          <div class="param-box-val t-mono-value clickable">
+            <span id="coffee-val">26g</span>
+            <span data-icon="chevron-down" style="width:12px;height:12px;display:block;flex-shrink:0;opacity:.5"></span>
+          </div>
+        </div>
+        <div class="param-box">
+          <p class="param-box-lbl t-caption">Water</p>
+          <div class="param-box-val t-mono-value" id="cp-water">Auto</div>
+        </div>
+      </div>
+      <div class="param-grid-row">
+        <div class="param-box">
+          <p class="param-box-lbl t-caption">Temp</p>
+          <div class="param-box-val t-mono-value" id="cp-temp">Auto</div>
+        </div>
+        <div class="param-box">
+          <p class="param-box-lbl t-caption">Ratio</p>
+          <div class="param-box-val t-mono-value" id="cp-ratio">Auto</div>
+        </div>
+      </div>
+      <div class="param-box full-width">
+        <p class="param-box-lbl t-caption">Grind</p>
+        <div class="param-box-val t-mono-value" id="cp-grind">Auto</div>
+      </div>
+    </div>
+    <div id="label-cta" class="label-cta">
+      <p class="t-body">Create an expertly dialed brew recipe from your label</p>
+      <div class="upload-btns">
+        <input type="file" id="cam-input" accept="image/*" capture="environment" style="display:none" onchange="handleLabel(event)"/>
+        <input type="file" id="lib-input" accept="image/*" style="display:none" onchange="handleLabel(event)"/>
+        <button class="icon-btn" onclick="document.getElementById('cam-input').click()" data-icon="camera" title="Take photo"></button>
+        <button class="icon-btn" onclick="document.getElementById('lib-input').click()" data-icon="image" title="Upload from library"></button>
+      </div>
+    </div>
+    <div id="label-uploaded" class="hidden">
+      <div class="uploaded-card">
+        <div class="ul-info"><strong>Label</strong><span class="t-caption" id="ul-name">—</span></div>
+        <button onclick="clearLabel()" style="background:none;border:none;color:var(--color-icon-muted);cursor:pointer;padding:4px" data-icon="x" aria-label="Remove label"></button>
+      </div>
+      <div class="gen-wrap">
+        <button class="icon-btn" id="gen-btn" onclick="doGenerate()" data-icon="arrow-up" title="Generate"></button>
+      </div>
+    </div>
+    <div id="cr-loading" class="loading-box hidden">
+      <div class="dots"><div class="dot"></div><div class="dot" style="animation-delay:.2s"></div><div class="dot" style="animation-delay:.4s"></div></div>
+      <div class="loading-lbl">Reading label &amp; building recipe</div>
+    </div>
+    <p id="cr-err" class="err-txt hidden"></p>
+  </div>
+</div>
+
+<!-- GENERATED / RC SCREEN -->
+<div class="screen" id="rc-screen">
+  <div id="rc-hdr">
+    <button class="icon-btn" onclick="closeRC()" data-icon="x" aria-label="Close"></button>
+  </div>
+  <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-top:var(--space-16)">
+    <div class="rc-coffee-name t-body" id="rc-coffee-name"></div>
+    <div class="rationale-wrap collapsed" id="rc-rationale-wrap">
+      <div class="rationale-text t-heading-accent" id="rc-rationale"></div>
+      <div class="rationale-fade"></div>
+    </div>
+    <button class="more-notes" id="rc-more" onclick="toggleNotes()">More notes</button>
+    <div class="rc-grid" id="rc-rows"></div>
+    <div class="brew-recipe-card brc-card" id="brc-card">
+      <div class="brc-hdr" onclick="toggleBrewRecipe()">
+        <div><div class="brc-title t-body">Dialed brew recipe</div><div class="brc-sub t-mono-sub" id="brc-sub"></div></div>
+        <span class="brc-chev" data-icon="chevron-down" style="width:20px;height:20px;display:block"></span>
+      </div>
+      <div class="brc-body hidden" id="brc-body"></div>
+    </div>
+    <div style="height:8px"></div>
+  </div>
+  <div class="rc-actions">
+    <button class="icon-btn" onclick="confirmDeleteRC()" data-icon="trash" title="Delete recipe"></button>
+    <button class="icon-btn" onclick="brewRC()" data-icon="waves" title="Brew"></button>
+  </div>
+</div>
+
+<!-- STAGE OVERLAY -->
+<div id="ov">
+  <div class="ov-inner">
+    <div class="ov-title t-body">Dialed</div>
+    <div class="stage-list" id="ov-stages"></div>
+  </div>
+  <div class="ov-btn">
+    <button class="icon-btn" onclick="closeOverlay()" data-icon="check" aria-label="Done"></button>
+  </div>
+</div>
+
+<!-- API KEY SCREEN -->
+<div id="apikey-screen" class="hidden">
+  <div class="ak-body">
+    <div class="ak-tag">Welcome to Dial</div>
+    <h1 class="ak-title">Set up your API key</h1>
+    <p class="ak-desc">Dial uses Anthropic's AI to scan coffee bag labels and generate recipes. Each person needs their own free key.</p>
+    <div class="ak-steps">
+      <div style="font-size:9px;letter-spacing:1.6px;color:var(--color-text-muted);margin-bottom:12px;text-transform:uppercase">How to get your free key</div>
+      <div class="ak-step"><div class="ak-num">1</div><div class="ak-step-txt">Go to <code>console.anthropic.com</code></div></div>
+      <div class="ak-step"><div class="ak-num">2</div><div class="ak-step-txt">Create a free account &mdash; add $5 credit to get started</div></div>
+      <div class="ak-step"><div class="ak-num">3</div><div class="ak-step-txt">Go to <strong>API Keys</strong> &rarr; Create Key &rarr; paste below</div></div>
+    </div>
+    <input type="password" id="ak-input" class="ak-input" placeholder="sk-ant-api03-..." oninput="document.getElementById('ak-err').classList.add('hidden')"/>
+    <p id="ak-err" class="ak-err hidden"></p>
+    <button onclick="saveApiKey()" class="btn-pill dark" style="margin-bottom:12px">Save &amp; Start Brewing</button>
+    <p class="ak-note">Your key is saved on this device only.<br/>Same key works on all your devices.</p>
+  </div>
+  <div class="ak-footer">
+    <button onclick="skipApiKey()" class="btn-pill ghost">Skip &mdash; use manual builder only</button>
+  </div>
+</div>
+
+<!-- RECIPE CARD POPOVER -->
+<div id="pop" class="popover hidden">
+  <button class="pop-item" onclick="viewRecipe()">View</button>
+  <button class="pop-item danger" onclick="askDeleteFromPop()">Delete</button>
+</div>
+
+<!-- COFFEE WEIGHT DROPDOWN -->
+<div id="coffee-pop" class="popover scroll-pop hidden"></div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div id="confirm-modal" class="hidden">
+  <div class="confirm-card">
+    <p class="confirm-title">Delete recipe?</p>
+    <p class="confirm-msg">This can’t be undone.</p>
+    <div class="confirm-btns">
+      <button class="confirm-btn" onclick="closeConfirm()">Cancel</button>
+      <button class="confirm-btn danger" onclick="doDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js?v=37"></script>
+</body>
+</html>

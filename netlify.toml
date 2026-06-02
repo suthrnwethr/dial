@@ -1,0 +1,17 @@
+# Netlify config for Dial
+# Keeps mobile Safari from serving stale HTML after each deploy.
+
+[build]
+  publish = "."
+
+# HTML is always revalidated — guarantees the latest ?v= asset links load.
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# The root document (served at "/") — same rule.
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
