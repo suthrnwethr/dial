@@ -358,7 +358,7 @@ async function doGenerate(){
   document.getElementById('cr-loading').classList.remove('hidden');
   document.getElementById('cr-err').classList.add('hidden');
   const coffeeW = cpCoffee==='Auto'?20:Number(cpCoffee);
-  const m=csSetup.method||'V60', g=csSetup.grinder||'burr grinder', k=csSetup.kettle||'gooseneck kettle', ratio=csSetup.ratio||'1:15';
+  const m=csSetup.method||'V60', g=csSetup.grinder||'burr grinder', k=csSetup.kettle||'gooseneck kettle';
   const today=new Date().toISOString().slice(0,10);
   const METHOD_GUIDE={
     'V60':'Conical pour-over, fast flow. Medium-fine grind. Bloom then 2-4 pulse pours, even/concentric spirals. Total brew 2:30-3:30.',
@@ -373,9 +373,9 @@ async function doGenerate(){
     +'Carefully read this coffee bag label and extract: origin, farm/producer, variety, process (washed/natural/honey/etc.), altitude, roast level, roast date, and tasting notes. '
     +'Reason like an expert: washed coffees take brighter, hotter extraction; naturals/honeys take slightly lower temp and gentler agitation; high-altitude/dense beans want hotter water and a finer grind; '
     +'if a roast date is visible, compute roast age from today and lengthen the bloom for fresher coffee (more CO2 off-gassing), shorten it for older coffee. '
-    +'Design the recipe specifically for this equipment: method='+m+', grinder='+g+', kettle='+k+', ratio='+ratio+', coffee='+coffeeW+'g. '
+    +'Design the recipe specifically for this equipment: method='+m+', grinder='+g+', kettle='+k+', coffee='+coffeeW+'g. '
     +'Method guidance for '+m+': '+methodGuide+' '
-    +'Brewing science: bloom water = 2-3× the coffee dose; target 18-22% extraction; keep total brew time within the method window above. '
+    +'Brewing science: choose the brew ratio best suited to THIS coffee and method (commonly 1:15-1:17 for pour-over, 1:12-1:15 for immersion); bloom water = 2-3× the coffee dose; target 18-22% extraction; keep total brew time within the method window above. '
     +'GRIND must match the grinder ("'+g+'"): if the grinder model is recognizable (e.g. Baratza Encore 1-40, Comandante ~15-30 clicks, 1Zpresso, Fellow Ode), LEAD with that grinder\'s recommended setting NUMBER, then " • " and a descriptor — e.g. "15 • Medium-Fine". Use that grinder\'s correct scale. If the grinder is generic/unknown, lead with a micron range instead — e.g. "600-700µm • Medium-Fine". '
     +'waterTemp in Fahrenheit by roast level: light=201-205, medium=194-200, dark=185-190. '
     +'If the label is missing details, make sensible specialty assumptions and note them briefly in the rationale — never fabricate an origin or process you cannot actually see. '
@@ -383,7 +383,7 @@ async function doGenerate(){
     +'Respond with ONLY a raw JSON object (no markdown) matching this schema. Replace every <...> with a value derived from THIS coffee — these are instructions, never reuse example wording or numbers:\n'
     +'{"name":"<short recipe name>","coffee":"<origin & roaster from the label>","method":"'+m+'","coffeeWeight":'+coffeeW+','
     +'"waterTemp":<water temp in °F, integer>,"totalWater":<grams = coffeeWeight × the ratio denominator>,'
-    +'"grindSize":"<setting-number-or-microns • descriptor, matched to '+g+'>","ratio":"'+ratio+'","tastingNotes":"<from the label>",'
+    +'"grindSize":"<setting-number-or-microns • descriptor, matched to '+g+'>","ratio":"<brew ratio you choose for this coffee, e.g. 1:16>","tastingNotes":"<from the label>",'
     +'"rationale":"<4-6 expert sentences: why this temp, ratio, grind and technique suit THIS coffee, what to expect in the cup, any roast-age notes, and any assumptions made>",'
     +'"stages":[{"name":"<e.g. Bloom>","duration":<seconds>,"pourDuration":<seconds, less than duration>,"targetWeight":<cumulative grams on the scale>,"pourRate":"<slow|medium|fast>","technique":"<3-6 word cue>"}]}\n'
     +'Produce 3-5 stages appropriate for '+m+' (fewer for immersion methods like French Press). '
